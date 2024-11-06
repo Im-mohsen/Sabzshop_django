@@ -4,12 +4,12 @@ from django.db import models
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, verbose_name='نام دسته')
+    slug = models.SlugField(max_length=255, unique=True, verbose_name='اسلاگ')
 
-    class Mete:
+    class Meta:
         ordering = ['name']
-        index = [
+        indexes = [
             models.Index(fields=['name'])
         ]
         verbose_name = 'دسته بندی'
@@ -26,7 +26,7 @@ class Product(models.Model):
     description = models.TextField(max_length=3000, verbose_name='توضیحات')
     inventory = models.PositiveIntegerField(default=0, verbose_name='موجودی محصول')
     price = models.PositiveIntegerField(default=0, verbose_name='قیمت')
-    off = models.PositiveIntegerField(default=0, verbose_name='تخفیف')
+    off = models.PositiveIntegerField(default=0, verbose_name='تخفیف(%)')
     new_price = models.PositiveIntegerField(default=0, verbose_name='قیمت پس از تخفیف')
     created = models.DateTimeField(auto_now_add=True, verbose_name='زمان ایجاد')
     updated = models.DateTimeField(auto_now=True, verbose_name='زمان بروزرسانی')
