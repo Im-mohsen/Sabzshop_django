@@ -46,3 +46,33 @@ a:link, a:visited{
 .discounted-price{
     color: white;
 }
+.product-container{
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
+}
+.product-detail{
+    width: 40%;
+    padding: 20px;
+    border: 1px solid #ccc;
+}
+.discounted-price-2{
+    color: black;
+}
+.product-images{
+    width: 50%;
+    padding: 20px;
+    border: 1px solid #ccc;
+}
+.detail-photo{
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 10px;
+}
+.product-description{
+    clear: both;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+}
