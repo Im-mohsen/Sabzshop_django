@@ -16,12 +16,17 @@ def product_list(request, category_slug=None):
         'categories': categories,
         'products': products,
     }
+    request.session['phone'] = '09123456789'
     return render(request, 'shop/product_list.html', context)
 
 
 def product_detail(request, id, slug):
     product = get_object_or_404(Product, slug=slug, id=id)
+    phone = request.session.get('phone')
+    # to delete session
+    # del request.session['phone']
     context = {
         'product': product,
+        'phone': phone,
     }
     return render(request, 'shop/product_detail.html', context)
