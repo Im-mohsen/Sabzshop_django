@@ -28,6 +28,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=255, verbose_name='اسلاگ')
     description = models.TextField(max_length=3000, verbose_name='توضیحات')
     inventory = models.PositiveIntegerField(default=0, verbose_name='موجودی محصول')
+    weight = models.PositiveIntegerField(default=0, verbose_name='وزن')
     price = models.PositiveIntegerField(default=0, verbose_name='قیمت')
     off = models.PositiveIntegerField(default=0, verbose_name='تخفیف(%)')
     new_price = models.PositiveIntegerField(default=0, verbose_name='قیمت پس از تخفیف')
