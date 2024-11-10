@@ -1,0 +1,42 @@
+{% extends 'parent/base.html' %}
+{% load static %}
+{% block title %}cart{% endblock %}
+{% block content %}
+    <div class="header">
+        <h2>سبد خرید</h2>
+    </div>
+    <div class="cart-container-1">
+        {% for item in cart %}
+            <div class="product-item">
+                <a href="{% url 'shop:product_detail' item.product.id item.product.slug %}">
+                    <img src="{{ item.product.images.first.file.url }}" class="product-images-1">
+                </a>
+                <div class="product-info">
+                    <h3>
+                        <a href="{% url 'shop:product_detail' item.product.id item.product.slug %}">
+                            نام محصول: {{ item.product.name }}
+                        </a>
+                    </h3>
+                    <p>قیمت هر محصول: <span>{{ item.price }}</span></p>
+                    <p>تعداد: <span>{{ item.quantity }}</span></p>
+                    <p>قیمت کل: <span>{{ item.total }}</span></p>
+                </div>
+                <div class="actions">
+                    <div class="quantity-add">+</div>
+                    <div class="quantity-sub">-</div>
+                    <div class="quantity-remove">حذف</div>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="total-price">
+            <p>قیمت کل: <span>{{ cart.get_total_price }}</span> تومان</p>
+            <p>هزینه ارسال: <span>{{ cart.get_post_price }}</span> تومان</p>
+            <p>هزینه قابل پرداخت: <span>{{ cart.get_final_price }}</span> تومان</p>
+        </div>
+        <div class="checkbox-buttons">
+            <div class="continue-btn"><a href="#">ادامه فرآیند خرید</a></div>
+            <div class="back-btn"><a href="{% url 'shop:products_list' %}">برگشت به لیست محصولات</a></div>
+
+        </div>
+    </div>
+{% endblock %}
