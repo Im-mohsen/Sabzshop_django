@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'debug_toolbar',
     "orders.apps.OrdersConfig",
+    "account.apps.AccountConfig"
 ]
 
 MIDDLEWARE = [
@@ -127,6 +128,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+AUTH_USER_MODEL = 'account.ShopUser'
 
 
 # Static files (CSS, JavaScript, Images)
