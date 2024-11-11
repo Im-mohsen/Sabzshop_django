@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'cart.apps.CartConfig',
     'debug_toolbar',
+    "orders.apps.OrdersConfig",
 ]
 
 MIDDLEWARE = [
