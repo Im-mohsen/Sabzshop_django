@@ -21,7 +21,7 @@ class Cart:
 
     def sub(self, product):
         product_id = str(product.id)
-        if self.cart[product_id]['quantity'] > 0:
+        if self.cart[product_id]['quantity'] > 1:
             self.cart[product_id]['quantity'] -= 1
         self.save()
 
@@ -38,6 +38,7 @@ class Cart:
     def get_post_price(self):
         weight = sum(item['weight'] * item['quantity'] for item in self.cart.values())
         if weight < 1000:
+            print(sum(item['price'] for item in self.cart.values()))
             return 20000
         elif 1000 < weight < 2000:
             return 30000
@@ -56,7 +57,7 @@ class Cart:
 
     def __iter__(self):
         product_ids = self.cart.keys()
-        products = Product.objects.filter(id__in = product_ids)
+        products = Product.objects.filter(id__in=product_ids)
         cart_dict = self.cart.copy()
         for product in products:
             cart_dict[str(product.id)]['product'] = product
