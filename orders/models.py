@@ -6,7 +6,8 @@ from shop.models import Product
 
 
 class Order(models.Model):
-    name = models.CharField(max_length=150, verbose_name='نام')
+    first_name = models.CharField(max_length=50, verbose_name='نام')
+    last_name = models.CharField(max_length=50, verbose_name='نام خانوادگی')
     phone = models.CharField(max_length=11, verbose_name='شماره تماس')
     address = models.CharField(max_length=250, verbose_name='آدرس')
     postal_code = models.CharField(max_length=10, verbose_name='کدپستی')
@@ -21,6 +22,8 @@ class Order(models.Model):
         indexes = [
             models.Index(fields=['-created'])
         ]
+        verbose_name = 'سفارش'
+        verbose_name_plural = 'سفارش ها'
 
     def __str__(self):
         return f"order {self.id}"
@@ -55,4 +58,4 @@ class OrderItem(models.Model):
         return self.price * self.quantity
 
     def get_weight(self):
-        return self.weight
+        return self.weight * self.quantity
