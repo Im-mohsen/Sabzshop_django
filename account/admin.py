@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import *
 from django.contrib.auth.admin import UserAdmin
-from django.core.mail import send_mail
 
 # Register your models here.
 
