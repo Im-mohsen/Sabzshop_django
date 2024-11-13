@@ -23,3 +23,8 @@ def user_login(request):
     else:
         form = LoginForm()
     return render(request, "registration/login.html", {'form': form})
+
+
+def log_out(request):
+    logout(request)
+    return render(request, 'registration/logged_out.html')
