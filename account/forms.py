@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import ShopUser
+from django.contrib.auth.forms import AuthenticationForm
 
 
 class ShopUserCreationForm(UserCreationForm):
@@ -55,3 +56,8 @@ class ShopUserChangeForm(UserChangeForm):
             raise forms.ValidationError('Phone must have 11 digits.')
 
         return phone
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=250, required=True)
+    password = forms.CharField(max_length=250, required=True, widget=forms.PasswordInput)
