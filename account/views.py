@@ -28,3 +28,16 @@ def user_login(request):
 def log_out(request):
     logout(request)
     return render(request, 'registration/logged_out.html')
+
+
+def register(request):
+    if request.method == "POST":
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            return render(request, 'registration/register_done.html', {'user': user})
+    else:
+        form = UserRegisterForm()
+    return render(request, "registration/register.html", {'form': form})

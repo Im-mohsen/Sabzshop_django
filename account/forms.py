@@ -61,3 +61,24 @@ class ShopUserChangeForm(UserChangeForm):
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=250, required=True)
     password = forms.CharField(max_length=250, required=True, widget=forms.PasswordInput)
+
+
+class UserRegisterForm(forms.ModelForm):
+    password = forms.CharField(max_length=50, widget=forms.PasswordInput, label="رمز عبور")
+    password2 = forms.CharField(max_length=50, widget=forms.PasswordInput, label="تکرار رمز عبور")
+
+    class Meta:
+        model = ShopUser
+        fields = ['phone', 'first_name', 'last_name']
+
+    def clean_password2(self):
+        cd = self.cleaned_data
+        if cd['password'] != cd['password2']:
+            raise forms.ValidationError("رمز عبورها باهم یکسان نیستند!")
+        return cd['password2']
+
+    def clean_phone(self):
+        phone = self.cleaned_data['phone']
+        if ShopUser.objects.filter(phone=phone).exists():
+            raise forms.ValidationError("phone already exists!")
+        return phone
