@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import ShopUser
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import SetPasswordForm
 
 
 class ShopUserCreationForm(UserCreationForm):
@@ -94,3 +95,8 @@ class UserEditForm(forms.ModelForm):
         if ShopUser.objects.exclude(id=self.instance.id).filter(phone=phone).exists():
             raise forms.ValidationError("phone already exists!")
         return phone
+
+
+class CustomPasswordChangeForm(SetPasswordForm):
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(user, *args, **kwargs)

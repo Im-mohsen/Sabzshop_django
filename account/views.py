@@ -58,3 +58,21 @@ def edit_user(request):
         "user_form": user_form
     }
     return render(request, 'registration/edit_user.html', context)
+
+
+@login_required
+def password_change(request):
+    if request.method == 'POST':
+        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            # messages.success(request, 'پسورد شما با موفقیت تغییر کرد.')
+            return redirect('done/')  # به صفحه‌ای که می‌خواهید بعد از تغییر به آن بروید
+    else:
+        form = CustomPasswordChangeForm(user=request.user)
+
+    return render(request, 'registration/password_change_form.html', {'form': form})
+
+
+def password_change_done(request):
+    return render(request, 'registration/password_change_done.html')
