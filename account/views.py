@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
 from django.contrib.auth import logout, login, authenticate
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
@@ -41,3 +42,19 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, "registration/register.html", {'form': form})
+
+
+@login_required
+def edit_user(request):
+    if request.method == "POST":
+        user_form = UserEditForm(request.POST, instance=request.user, files=request.FILES)
+        if user_form.is_valid():
+            user_form.save()
+            # return redirect('social:profile')
+            return redirect('shop:products_list')
+    else:
+        user_form = UserEditForm(instance=request.user)
+    context = {
+        "user_form": user_form
+    }
+    return render(request, 'registration/edit_user.html', context)

@@ -82,3 +82,15 @@ class UserRegisterForm(forms.ModelForm):
         if ShopUser.objects.filter(phone=phone).exists():
             raise forms.ValidationError("phone already exists!")
         return phone
+
+
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = ShopUser
+        fields = ['phone', 'first_name', 'last_name', 'address']
+
+    def clean_phone(self):
+        phone = self.cleaned_data['phone']
+        if ShopUser.objects.exclude(id=self.instance.id).filter(phone=phone).exists():
+            raise forms.ValidationError("phone already exists!")
+        return phone
