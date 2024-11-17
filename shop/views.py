@@ -43,3 +43,6 @@ def product_detail(request, id, slug):
         'phone': phone,
     }
     return render(request, 'shop/product_detail.html', context)
+
+def main_page(request):
+    return render(request,'shop/main_page.html')

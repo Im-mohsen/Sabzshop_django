@@ -1,0 +1,10 @@
+{% extends 'parent/base.html' %}
+{% load shop_tags %}
+{% block title %}main page{% endblock %}
+{% block content %}
+    <h2>صفحه اصلی</h2>
+    <div class="latest-products">
+        <h3>اخرین محصولات</h3>
+        {% latest_products %}
+    </div>
+{% endblock %}
