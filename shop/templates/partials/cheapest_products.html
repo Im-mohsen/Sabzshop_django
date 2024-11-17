@@ -1,0 +1,6 @@
+<div>
+    {% for product in cheap_products%}
+        <a href="{{ product.get_absolute_url }}">{{ product.name }} : {{ product.created |date:"Y/m/d-H:i" }} - {{ product.new_price }}</a>
+        <br>
+    {% endfor %}
+</div>

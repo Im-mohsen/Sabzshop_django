@@ -20,3 +20,12 @@ def cheapest_products(count=5):
         'cheap_products': cheap_products
     }
     return context
+
+
+@register.inclusion_tag("partials/most_expensive_products.html")
+def most_expensive_products(count=5):
+    expensive_products = Product.objects.order_by('-new_price')[:count]
+    context = {
+        'expensive_products': expensive_products
+    }
+    return context
