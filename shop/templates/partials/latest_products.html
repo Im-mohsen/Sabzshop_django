@@ -1,5 +1,4 @@
 <div>
-    <h2>آخرین محصولات</h2>
     {% for product in lasts_products%}
         <a href="{{ product.get_absolute_url }}">{{ product.name }} : {{ product.created |date:"Y/m/d-H:i" }}</a>
         <br>

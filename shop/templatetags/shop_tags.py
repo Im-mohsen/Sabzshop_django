@@ -11,3 +11,12 @@ def latest_products(count=5):
         'lasts_products': lasts_products
     }
     return context
+
+
+@register.inclusion_tag("partials/cheapest_products.html")
+def cheapest_products(count=5):
+    cheap_products = Product.objects.order_by('new_price')[:count]
+    context = {
+        'cheap_products': cheap_products
+    }
+    return context
