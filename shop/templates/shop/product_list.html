@@ -20,6 +20,14 @@
                 {% endfor %}
                 
             </ul>
+            <hr>
+            <p>مرتب سازی براساس</p>
+            <ul>
+                <li class="category"><a href="?sort=-created">جدیدترین</a></li>
+                <li class="category"><a href="?sort=created">قدیمی ترین</a></li>
+                <li class="category"><a href="?sort=-new_price">گران ترین</a></li>
+                <li class="category"><a href="?sort=new_price">ارزان ترین</a></li>
+            </ul>
         </div>
         <div class="row_products">
             {% for product in products %}

@@ -14,6 +14,14 @@ def product_list(request, category_slug=None):
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
 
+    products = products
+    sort = request.GET.get('sort')  # Default to newest
+    valid_sort_fields = ['-created', 'created', 'new_price', '-new_price']
+
+    if sort in valid_sort_fields:
+        products = products.order_by(sort)
+    else:
+        products = products.order_by('-created')  # Fallback to default
     # pagination
     paginator = Paginator(products, 12)
     page_number = request.GET.get('page', 1)
@@ -29,7 +37,6 @@ def product_list(request, category_slug=None):
         'categories': categories,
         'products': products,
     }
-    request.session['phone'] = '09123456789'
     return render(request, 'shop/product_list.html', context)
 
 
@@ -43,6 +50,7 @@ def product_detail(request, id, slug):
         'phone': phone,
     }
     return render(request, 'shop/product_detail.html', context)
+
 
 def main_page(request):
     return render(request,'shop/main_page.html')

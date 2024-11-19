@@ -1,5 +1,6 @@
 from django import template
 from ..models import Product
+from urllib.parse import urlencode, parse_qs
 
 register = template.Library()
 
@@ -29,3 +30,13 @@ def most_expensive_products(count=5):
         'expensive_products': expensive_products
     }
     return context
+
+
+@register.filter
+def safe_remove(query_string, param):
+    """
+    Removes a specific parameter from the query string.
+    """
+    params = parse_qs(query_string)  # تبدیل query_string به دیکشنری
+    params.pop(param, None)  # حذف پارامتر مورد نظر
+    return urlencode(params, doseq=True)  # بازسازی query_string بدون پارامتر
