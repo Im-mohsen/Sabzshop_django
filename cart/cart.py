@@ -13,7 +13,7 @@ class Cart:
     def add(self, product):
         product_id = str(product.id)
         if product_id not in self.cart:
-            self.cart[product_id] = {'quantity': 1, 'price': product.new_price, 'weight': product.weight}
+            self.cart[product_id] = {'quantity': 1, 'weight': product.weight}
         else:
             if self.cart[product_id]['quantity'] < product.inventory:
                 self.cart[product_id]['quantity'] += 1
@@ -45,8 +45,16 @@ class Cart:
             return 50000
 
     def get_total_price(self):
-        price = sum(item['price'] * item['quantity'] for item in self.cart.values())
-        return price
+        """
+        Calculate the total price dynamically based on the current prices in the database.
+        """
+        product_ids = self.cart.keys()
+        products = Product.objects.filter(id__in=product_ids)
+        total_price = 0
+        for product in products:
+            product_id = str(product.id)
+            total_price += product.new_price * self.cart[product_id]['quantity']
+        return total_price
 
     def get_final_price(self):
         return self.get_total_price() + self.get_post_price()
@@ -55,13 +63,18 @@ class Cart:
         return sum(item['quantity'] for item in self.cart.values())
 
     def __iter__(self):
+        """
+        Dynamically update product prices while iterating.
+        """
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
         cart_dict = self.cart.copy()
         for product in products:
-            cart_dict[str(product.id)]['product'] = product
+            product_id = str(product.id)
+            cart_dict[product_id]['product'] = product
+            cart_dict[product_id]['price'] = product.new_price  # قیمت به‌روز
+            cart_dict[product_id]['total'] = product.new_price * cart_dict[product_id]['quantity']
         for item in cart_dict.values():
-            item['total'] = item['price'] * item['quantity']
             yield item
 
     def save(self):
