@@ -76,3 +76,19 @@ def password_change(request):
 
 def password_change_done(request):
     return render(request, 'registration/password_change_done.html')
+
+
+def add_address(request):
+    if request.method == 'POST':
+        form = AddressForm(request.POST, request=request)  # ارسال request به فرم
+        if form.is_valid():
+            form.save()
+            return redirect('done/')  # یا هر مسیر دیگر
+    else:
+        form = AddressForm(request=request)  # ارسال request به فرم
+
+    return render(request, 'forms/add_address.html', {'form': form})
+
+
+def add_address_done(request):
+    return render(request, 'forms/add_address_done.html')

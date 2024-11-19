@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import ShopUser
+from .models import ShopUser, Address
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import SetPasswordForm
 
@@ -8,7 +8,7 @@ from django.contrib.auth.forms import SetPasswordForm
 class ShopUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = ShopUser
-        fields = ('phone', 'first_name', 'last_name', 'address', 'is_staff', 'is_active', 'is_superuser')
+        fields = ('phone', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser')
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
@@ -35,7 +35,7 @@ class ShopUserCreationForm(UserCreationForm):
 class ShopUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = ShopUser
-        fields = ('phone', 'first_name', 'last_name', 'address', 'is_staff', 'is_active', 'is_superuser')
+        fields = ('phone', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser')
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
@@ -88,7 +88,7 @@ class UserRegisterForm(forms.ModelForm):
 class UserEditForm(forms.ModelForm):
     class Meta:
         model = ShopUser
-        fields = ['phone', 'first_name', 'last_name', 'address']
+        fields = ['phone', 'first_name', 'last_name']
 
     def clean_phone(self):
         phone = self.cleaned_data['phone']
@@ -100,3 +100,34 @@ class UserEditForm(forms.ModelForm):
 class CustomPasswordChangeForm(SetPasswordForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(user, *args, **kwargs)
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ['address', 'postal_code', 'province', 'city', 'is_default']
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)  # دریافت request از آرگومان‌های اضافی
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True, *args, **kwargs):
+        instance = super().save(commit=False)
+
+        # تخصیص user به آدرس
+        if self.request and self.request.user.is_authenticated:
+            instance.user = self.request.user
+
+        # اگر آدرس به عنوان پیش‌فرض انتخاب شده است، سایر آدرس‌های پیش‌فرض کاربر را غیرفعال کن
+        if instance.is_default:
+            Address.objects.filter(user=instance.user, is_default=True).exclude(id=instance.id).update(is_default=False)
+
+        if commit:
+            instance.save()  # ذخیره آدرس جدید
+        return instance
+
+    def clean_postal_code(self):
+        postal_code = self.cleaned_data['postal_code']
+        if not postal_code.isdigit() or len(postal_code) != 10:
+            raise forms.ValidationError("کد پستی باید 10 رقمی باشد!")
+        return postal_code

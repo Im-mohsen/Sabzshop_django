@@ -174,3 +174,9 @@ a:link, a:visited{
 .latest-products a{
     color: black;
 }
+.add-address-done{
+    margin-top: 100px;
+}
+.add-address-done-link a{
+    color: black;
+}
