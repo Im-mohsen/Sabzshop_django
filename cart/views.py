@@ -3,6 +3,7 @@ from django.views.decorators.http import require_POST
 from shop.models import Product
 from .cart import Cart
 from django.http import JsonResponse
+from .common.KaveSms import send_sms_normal, send_sms_with_template
 
 
 # Create your views here.
@@ -16,6 +17,9 @@ def add_to_cart(request, product_id):
             'item_count': len(cart),
             'total_price': cart.get_total_price(),
         }
+        # send SMS (Not need to working here)
+        # send_sms_normal('09010107036', f'اضافه شدن محصول به سبد خرید شما: {product.name}')
+        # send_sms_with_template(product.phone, {'token1': product.name, 'token10': '54325'}, 'send_template_sms')
         return JsonResponse(context)
     except:
         return JsonResponse({'error': 'Invalid request'})
