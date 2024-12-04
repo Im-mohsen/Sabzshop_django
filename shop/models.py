@@ -16,7 +16,7 @@ class Category(models.Model):
         verbose_name_plural = 'دسته بندی ها'
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
     def get_absolute_url(self):
         return reverse('shop:products_list_by_category', args=[self.slug])
@@ -46,7 +46,7 @@ class Product(models.Model):
         verbose_name_plural = 'محصولات'
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
     def get_absolute_url(self):
         return reverse('shop:product_detail', args=[self.id, self.slug])
@@ -58,7 +58,7 @@ class ProductFeatured(models.Model):
     product = models.ForeignKey(Product, related_name='features', verbose_name='محصول ها', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name + ":" + self.value
+        return f"{self.name} : {self.value}"
 
 
 class Image(models.Model):

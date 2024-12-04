@@ -40,7 +40,7 @@ class ShopUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.phone
+        return f"{self.phone}"
 
 
 class Address(models.Model):
