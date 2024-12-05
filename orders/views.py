@@ -2,12 +2,16 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import PhoneVerificationForm, OrderCreateForm
-from .models import OrderItem
+from .models import OrderItem, Order
 from account.models import ShopUser
 from cart.cart import Cart
 import random
 from django.contrib.auth import login
 from cart.common.KaveSms import send_sms_with_template
+from django.conf import settings
+import requests
+import json
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -63,12 +67,107 @@ def order_create(request):
         form = OrderCreateForm(request.POST)
         if form.is_valid():
             order = form.save()
+            order.buyer = request.user
+            order.save()
             for item in cart:
                 OrderItem.objects.create(order=order, product=item['product'], price=item['price']
                                          , quantity=item['quantity'], weight=item['weight'])
             cart.clear()
+            request.session['order_id']=order.id
             # اتصال به درپاه خرید
-            return redirect('shop:products_list')
+            return redirect('orders:request')
     else:
         form = OrderCreateForm()
     return render(request, 'order_create.html', {'form': form, 'cart': cart})
+
+
+#? sandbox merchant
+if settings.SANDBOX:
+    sandbox = 'sandbox'
+else:
+    sandbox = 'www'
+
+
+ZP_API_REQUEST = f"https://{sandbox}.zarinpal.com/pg/rest/WebGate/PaymentRequest.json"
+ZP_API_VERIFY = f"https://{sandbox}.zarinpal.com/pg/rest/WebGate/PaymentVerification.json"
+ZP_API_STARTPAY = f"https://{sandbox}.zarinpal.com/pg/StartPay/"
+
+# Important: need to edit for real server.
+CallbackURL = 'http://127.0.0.1:8000/orders/verify/'
+
+
+def send_request(request):
+    # cart = Cart(request)
+    # description = ''
+    # for item in cart:
+    #     description += f'{item["product"].name}, {item["quantity"]} قطعه' + '\n'
+    # data = {
+    #     "MerchantID": settings.MERCHANT,
+    #     "Amount": cart.get_final_price(),
+    #     "Description": description,
+    #     "Phone": request.user.phone,
+    #     "CallbackURL": CallbackURL,
+    # }
+
+    order = Order.objects.get(id=request.session['order_id'])
+    description = ''
+    for item in order.items.all():
+        description += item.product.name + ","
+    data = {
+        "MerchantID": settings.MERCHANT,
+        "Amount": order.get_final_cost(),
+        "Description": description,
+        "Phone": request.user.phone,
+        "CallbackURL": CallbackURL,
+    }
+    data = json.dumps(data)
+    # set content length by data
+    headers = {'accept': 'application/json', 'content-type': 'application/json', 'content-length': str(len(data))}
+    try:
+        response = requests.post(ZP_API_REQUEST, data=data, headers=headers, timeout=10)
+
+        if response.status_code == 200:
+            response_json = response.json()
+            authority = response_json['Authority']
+            if response_json['Status'] == 100:
+                # cart.clear()
+                return redirect(ZP_API_STARTPAY+authority)
+            else:
+                return HttpResponse('Error')
+        return HttpResponse('response failed')
+    except requests.exceptions.Timeout:
+        return HttpResponse('Timeout Error')
+    except requests.exceptions.ConnectionError:
+        return HttpResponse('Connection Error')
+
+
+def verify(request):
+    order = Order.objects.get(id=request.session['order_id'])
+    data = {
+        "MerchantID": settings.MERCHANT,
+        "Amount": order.get_final_cost(),
+        "Authority": request.GET.get('Authority'),
+    }
+    data = json.dumps(data)
+    # set content length by data
+    headers = {'accept': 'application/json', 'content-type': 'application/json', 'content-length': str(len(data))}
+    try:
+        response = requests.post(ZP_API_VERIFY, data=data, headers=headers)
+        if response.status_code == 200:
+            response_json = response.json()
+            reference_id = response_json['RefID']
+            if response_json['Status'] == 100:
+                for item in order.items.all():
+                    item.product.inventory -= item.quantity
+                    item.product.save()
+                order.paid = True
+                order.save()
+                return HttpResponse(f'successful , RefID: {reference_id}')
+            else:
+                return HttpResponse('Error')
+        del request.session['order_id']
+        return HttpResponse('response failed')
+    except requests.exceptions.Timeout:
+        return HttpResponse('Timeout Error')
+    except requests.exceptions.ConnectionError:
+        return HttpResponse('Connection Error')

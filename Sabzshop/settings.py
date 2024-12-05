@@ -149,3 +149,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+MERCHANT = "00000000-0000-0000-0000-000000000000"
+
+SANDBOX = False
