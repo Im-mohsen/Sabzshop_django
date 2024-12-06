@@ -1,0 +1,11 @@
+{% for item in order.items.all %}
+    {{ item.product.name }}
+    <br>
+    {{ item.quantity }}
+    <br>
+    {{ item.price }}
+    <br>
+{% endfor %}
+{{ order.created }}
+<br>
+{{ order.address }}

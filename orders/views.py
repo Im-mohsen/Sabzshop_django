@@ -162,12 +162,26 @@ def verify(request):
                     item.product.save()
                 order.paid = True
                 order.save()
-                return HttpResponse(f'successful , RefID: {reference_id}')
+                return render(request, 'payment_tracking.html',
+                              {"success": True, "RefID": reference_id, "order_id": order.id})
             else:
-                return HttpResponse('Error')
+                return render(request, 'payment_tracking.html', {"success": False,})
         del request.session['order_id']
         return HttpResponse('response failed')
     except requests.exceptions.Timeout:
         return HttpResponse('Timeout Error')
     except requests.exceptions.ConnectionError:
         return HttpResponse('Connection Error')
+
+
+@login_required
+def orders_list(request):
+    user = request.user
+    order = Order.objects.filter(buyer=user)
+    return render(request, 'orders_list.html', {'orders': order})
+
+
+@login_required
+def order_detail(request, id):
+    order = Order.objects.get(id=id)
+    return render(request, 'order_detail.html', {'order': order})
